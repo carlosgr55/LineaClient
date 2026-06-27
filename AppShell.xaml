@@ -4,11 +4,19 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:LineaClient"
+    xmlns:views="clr-namespace:LineaClient.Views"
     Title="LineaClient">
 
+    <!-- Login como pantalla inicial (sin tab bar) -->
+    <ShellContent
+        Route="LoginPage"
+        ContentTemplate="{DataTemplate views:LoginPage}"
+        Shell.NavBarIsVisible="False" />
+
+    <!-- Pantalla principal post-login -->
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Route="MainPage"
+        ContentTemplate="{DataTemplate local:MainPage}" />
 
 </Shell>

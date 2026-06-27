@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:LineaClient.ViewModels"
+    x:Class="LineaClient.Views.LoginPage"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="#C7C5C4">
+
+    <ContentPage.BindingContext>
+        <vm:LoginViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="*,Auto,*">
+
+        <!-- Bloque superior: logo / marca -->
+        <VerticalStackLayout
+            Grid.Row="0"
+            VerticalOptions="End"
+            HorizontalOptions="Center"
+            Padding="0,0,0,32"
+            Spacing="6">
+
+            <!-- Acento de color como barra horizontal -->
+            <BoxView
+                HeightRequest="3"
+                WidthRequest="48"
+                Color="#f65810"
+                HorizontalOptions="Center" />
+
+            <Label
+                Text="GICP"
+                FontFamily="OpenSansSemibold"
+                FontSize="34"
+                CharacterSpacing="8"
+                TextColor="#1A1A1A"
+                HorizontalOptions="Center" />
+
+            <Label
+                Text="GESTION INTEGRADA DE CONTENEDORES DE PLANTA"
+                FontSize="11"
+                CharacterSpacing="3"
+                TextColor="#5A5856"
+                HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+
+        <!-- Formulario de login -->
+        <VerticalStackLayout
+            Grid.Row="1"
+            Padding="40,0"
+            Spacing="16"
+            MaximumWidthRequest="420">
+
+            <!-- Campo usuario -->
+            <VerticalStackLayout Spacing="6">
+                <Label
+                    Text="USUARIO"
+                    FontSize="10"
+                    CharacterSpacing="2"
+                    TextColor="#5A5856" />
+                <Border
+                    Stroke="#A8A6A5"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 4"
+                    BackgroundColor="White"
+                    Padding="14,0">
+                    <Entry
+                        Text="{Binding Usuario}"
+                        Placeholder="Ingresa tu usuario"
+                        PlaceholderColor="#A8A6A5"
+                        TextColor="#1A1A1A"
+                        BackgroundColor="Transparent"
+                        FontFamily="OpenSansRegular"
+                        FontSize="14"
+                        HeightRequest="48"
+                        ReturnType="Next" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Campo contrasena -->
+            <VerticalStackLayout Spacing="6">
+                <Label
+                    Text="PASSWORD"
+                    FontSize="10"
+                    CharacterSpacing="2"
+                    TextColor="#5A5856" />
+                <Border
+                    Stroke="#A8A6A5"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 4"
+                    BackgroundColor="White"
+                    Padding="14,0">
+                    <Entry
+                        Text="{Binding Contrasena}"
+                        Placeholder="Ingresa tu contrasena"
+                        PlaceholderColor="#A8A6A5"
+                        TextColor="#1A1A1A"
+                        BackgroundColor="Transparent"
+                        FontFamily="OpenSansRegular"
+                        FontSize="14"
+                        HeightRequest="48"
+                        IsPassword="True"
+                        ReturnType="Done"
+                        ReturnCommand="{Binding LoginCommand}" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Mensaje de error -->
+            <Border
+                IsVisible="{Binding TieneError}"
+                Stroke="#CC3300"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 4"
+                BackgroundColor="#FFE8E0"
+                Padding="14,10">
+                <Label
+                    Text="{Binding MensajeError}"
+                    TextColor="#CC3300"
+                    FontSize="13"
+                    FontFamily="OpenSansRegular" />
+            </Border>
+
+            <!-- Boton de ingreso: naranja con texto blanco -->
+            <Button
+                Text="INGRESAR"
+                Command="{Binding LoginCommand}"
+                IsEnabled="{Binding Cargando, Converter={StaticResource InvertBoolConverter}}"
+                BackgroundColor="#f65810"
+                TextColor="White"
+                FontFamily="OpenSansSemibold"
+                FontSize="13"
+                CharacterSpacing="2"
+                CornerRadius="4"
+                HeightRequest="50"
+                Margin="0,8,0,0" />
+
+            <!-- Indicador de carga -->
+            <ActivityIndicator
+                IsRunning="{Binding Cargando}"
+                IsVisible="{Binding Cargando}"
+                Color="#f65810"
+                HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+
+        <!-- Pie de pagina -->
+        <Label
+            Grid.Row="2"
+            Text="v1.0"
+            FontSize="11"
+            TextColor="#5A5856"
+            HorizontalOptions="Center"
+            VerticalOptions="End"
+            Margin="0,0,0,24" />
+
+    </Grid>
+
+</ContentPage>
