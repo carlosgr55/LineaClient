@@ -37,7 +37,7 @@
                 HorizontalOptions="Center" />
 
             <Label
-                Text="SISTEMA DE GESTION"
+                Text="GESTIÓN INTEGRADA DE CONTENEDORES DE PLANTA"
                 FontSize="11"
                 CharacterSpacing="3"
                 TextColor="#5A5856"

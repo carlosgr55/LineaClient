@@ -65,12 +65,12 @@ namespace LineaClient.ViewModels
                 // TODO: Reemplazar con repositorio real
                 // var repo = new UsuarioRepository(connectionString);
                 // var resultado = await repo.AutenticarAsync(Usuario, Contrasena);
-                // Consulta sugerida:
+                // Consulta:
                 //   SELECT u.Id, u.NombreUsuario, u.Rol, l.Id AS LineaId, l.Nombre AS NombreLinea
                 //   FROM Usuarios u
                 //   INNER JOIN Lineas l ON l.Id = u.LineaId
                 //   WHERE u.NombreUsuario = @usuario
-                //   AND u.Contrasena = HASHBYTES('SHA2_256', @contrasena)
+                //   AND u.Contrasena = 
 
                 var resultado = await SimularAutenticacionAsync(Usuario, Contrasena);
 
