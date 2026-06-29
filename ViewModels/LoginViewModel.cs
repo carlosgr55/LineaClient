@@ -1,12 +1,12 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using LineaClient.Models;
 
 namespace LineaClient.ViewModels
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
-        // --- Constante del rol permitido ---
         private const string RolRequerido = "Linea";
 
         private string _usuario = string.Empty;
@@ -41,8 +41,6 @@ namespace LineaClient.ViewModels
         }
 
         public ICommand LoginCommand { get; }
-
-        // Evento para notificar login exitoso a la vista
         public event Action? LoginExitoso;
 
         public LoginViewModel()
@@ -64,18 +62,15 @@ namespace LineaClient.ViewModels
 
             try
             {
-                // TODO: Reemplazar con llamada real al repositorio de SQL Server
-                // Ejemplo de implementacion esperada:
-                //
-                //   var repo = new UsuarioRepository(connectionString);
-                //   var resultado = await repo.AutenticarAsync(Usuario, Contrasena);
-                //
-                // El repositorio debe:
-                //   - Conectarse con SqlConnection usando Microsoft.Data.SqlClient
-                //   - Ejecutar un stored procedure o query parametrizado (nunca concatenar strings)
-                //     Ejemplo: SELECT Rol FROM Usuarios WHERE Usuario = @usuario AND Contrasena = HASHBYTES('SHA2_256', @contrasena)
-                //   - Devolver null si las credenciales no coinciden, o el Rol del usuario si son validas
-                //   - Manejar SqlException internamente y lanzar una excepcion de dominio limpia
+                // TODO: Reemplazar con repositorio real
+                // var repo = new UsuarioRepository(connectionString);
+                // var resultado = await repo.AutenticarAsync(Usuario, Contrasena);
+                // Consulta sugerida:
+                //   SELECT u.Id, u.NombreUsuario, u.Rol, l.Id AS LineaId, l.Nombre AS NombreLinea
+                //   FROM Usuarios u
+                //   INNER JOIN Lineas l ON l.Id = u.LineaId
+                //   WHERE u.NombreUsuario = @usuario
+                //   AND u.Contrasena = HASHBYTES('SHA2_256', @contrasena)
 
                 var resultado = await SimularAutenticacionAsync(Usuario, Contrasena);
 
@@ -91,11 +86,13 @@ namespace LineaClient.ViewModels
                     return;
                 }
 
+                // Guardar sesion global
+                SesionUsuario.Actual = resultado;
+
                 LoginExitoso?.Invoke();
             }
             catch (Exception ex)
             {
-                // TODO: Loguear con ILogger en produccion
                 MensajeError = $"Error al conectar: {ex.Message}";
             }
             finally
@@ -104,30 +101,27 @@ namespace LineaClient.ViewModels
             }
         }
 
-        // Simulacion temporal hasta conectar SQL Server
-        // Usuario de prueba: "linea" / "1234" con rol "Linea"
-        // Usuario de prueba: "admin" / "1234" con rol "Admin" (debe rechazarse)
-        private static async Task<ResultadoLogin?> SimularAutenticacionAsync(string usuario, string contrasena)
+        // Usuarios de prueba:
+        //   linea1 / 1234  -> rol Linea, LineaId 1 "Linea 1"
+        //   linea2 / 1234  -> rol Linea, LineaId 2 "Linea 2"
+        //   admin  / 1234  -> rol Admin (debe rechazarse)
+        private static async Task<SesionUsuario?> SimularAutenticacionAsync(string usuario, string contrasena)
         {
-            await Task.Delay(800); // Simula latencia de red/BD
+            await Task.Delay(800);
 
-            var usuarios = new Dictionary<string, ResultadoLogin>(StringComparer.OrdinalIgnoreCase)
+            if (contrasena != "1234") return null;
+
+            return usuario.ToLower() switch
             {
-                { "linea",  new ResultadoLogin("Linea",  "Linea") },
-                { "admin",  new ResultadoLogin("Admin",  "Admin") },
+                "linea1" => new SesionUsuario { UsuarioId = 1, NombreUsuario = "linea1", Rol = "Linea", LineaId = 1, NombreLinea = "Linea 1" },
+                "linea2" => new SesionUsuario { UsuarioId = 2, NombreUsuario = "linea2", Rol = "Linea", LineaId = 2, NombreLinea = "Linea 2" },
+                "admin"  => new SesionUsuario { UsuarioId = 3, NombreUsuario = "admin",  Rol = "Admin", LineaId = 0, NombreLinea = string.Empty },
+                _        => null
             };
-
-            if (usuarios.TryGetValue(usuario, out var resultado) && contrasena == "1234")
-                return resultado;
-
-            return null;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? prop = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
     }
-
-    // DTO simple para el resultado de autenticacion
-    public record ResultadoLogin(string NombreUsuario, string Rol);
 }

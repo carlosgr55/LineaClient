@@ -3,11 +3,10 @@
     x:Class="LineaClient.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:LineaClient"
     xmlns:views="clr-namespace:LineaClient.Views"
     Title="LineaClient">
 
-    <!-- Login como pantalla inicial (sin tab bar) -->
+    <!-- Login: pantalla inicial, sin navbar -->
     <ShellContent
         Route="LoginPage"
         ContentTemplate="{DataTemplate views:LoginPage}"
@@ -15,8 +14,8 @@
 
     <!-- Pantalla principal post-login -->
     <ShellContent
-        Title="Home"
-        Route="MainPage"
-        ContentTemplate="{DataTemplate local:MainPage}" />
+        Route="ContenedoresPage"
+        ContentTemplate="{DataTemplate views:ContenedoresPage}"
+        Shell.NavBarIsVisible="False" />
 
 </Shell>

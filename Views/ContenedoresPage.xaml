@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:vm="clr-namespace:LineaClient.ViewModels"
+    xmlns:models="clr-namespace:LineaClient.Models"
+    x:Class="LineaClient.Views.ContenedoresPage"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="#C7C5C4">
+
+    <!-- Header fijo: naranja con usuario, linea, hora y cerrar sesion -->
+    <Grid RowDefinitions="Auto,*">
+
+        <Grid
+            Grid.Row="0"
+            BackgroundColor="#f65810"
+            Padding="16,12">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Info de sesion -->
+            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                <Label
+                    Text="{Binding NombreLinea}"
+                    FontFamily="OpenSansSemibold"
+                    FontSize="16"
+                    TextColor="White" />
+                <Label
+                    Text="{Binding NombreUsuario}"
+                    FontSize="12"
+                    TextColor="#FFDCC8" />
+                <Label
+                    x:Name="LblFechaHora"
+                    Text="{Binding FechaHora}"
+                    FontSize="11"
+                    TextColor="#FFDCC8" />
+            </VerticalStackLayout>
+
+            <!-- Boton cerrar sesion -->
+            <Button
+                Grid.Column="1"
+                Text="Cerrar sesion"
+                Command="{Binding CerrarSesionCommand}"
+                BackgroundColor="Transparent"
+                TextColor="White"
+                BorderColor="White"
+                BorderWidth="1"
+                CornerRadius="4"
+                FontSize="12"
+                Padding="10,6"
+                VerticalOptions="Center" />
+        </Grid>
+
+        <!-- Cuerpo principal -->
+        <RefreshView
+            Grid.Row="1"
+            Command="{Binding CargarCommand}"
+            IsRefreshing="{Binding Cargando}"
+            RefreshColor="#f65810">
+
+            <ScrollView>
+                <VerticalStackLayout Padding="16" Spacing="12">
+
+                    <!-- Titulo de seccion -->
+                    <Label
+                        Text="CONTENEDORES DE LINEA"
+                        FontFamily="OpenSansSemibold"
+                        FontSize="11"
+                        CharacterSpacing="2"
+                        TextColor="#5A5856"
+                        Margin="0,8,0,4" />
+
+                    <!-- Mensaje de error general -->
+                    <Border
+                        IsVisible="{Binding TieneError}"
+                        Stroke="#CC3300"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 6"
+                        BackgroundColor="#FFE8E0"
+                        Padding="14,10">
+                        <Label
+                            Text="{Binding MensajeError}"
+                            TextColor="#CC3300"
+                            FontSize="13" />
+                    </Border>
+
+                    <!-- Lista de contenedores -->
+                    <VerticalStackLayout
+                        BindableLayout.ItemsSource="{Binding Contenedores}"
+                        Spacing="12">
+
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <!-- Tarjeta de contenedor -->
+                                <Border
+                                    BackgroundColor="White"
+                                    Stroke="#DCDCDC"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 10"
+                                    Padding="0">
+
+                                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" Padding="16">
+
+                                        <!-- Fila 1: imagen + tipo + badge estado -->
+                                        <Grid Grid.Row="0" ColumnDefinitions="80,*,Auto" Margin="0,0,0,12">
+
+                                            <!-- Imagen del contenedor -->
+                                            <Border
+                                                Grid.Column="0"
+                                                BackgroundColor="#F5F5F5"
+                                                StrokeShape="RoundRectangle 8"
+                                                Stroke="#E0E0E0"
+                                                StrokeThickness="1"
+                                                HeightRequest="72"
+                                                WidthRequest="72">
+                                                <Image
+                                                    Source="{Binding ImagenNombre}"
+                                                    Aspect="AspectFit"
+                                                    Margin="8" />
+                                            </Border>
+
+                                            <!-- Tipo y subtexto -->
+                                            <VerticalStackLayout
+                                                Grid.Column="1"
+                                                VerticalOptions="Center"
+                                                Margin="12,0,0,0"
+                                                Spacing="4">
+                                                <Label
+                                                    Text="{Binding Tipo}"
+                                                    FontFamily="OpenSansSemibold"
+                                                    FontSize="16"
+                                                    TextColor="#1A1A1A" />
+                                                <Label
+                                                    Text="Contenedor asignado a esta linea"
+                                                    FontSize="11"
+                                                    TextColor="#5A5856" />
+                                            </VerticalStackLayout>
+
+                                            <!-- Badge de estado -->
+                                            <Border
+                                                Grid.Column="2"
+                                                BackgroundColor="{Binding ColorEstado}"
+                                                StrokeShape="RoundRectangle 12"
+                                                Stroke="Transparent"
+                                                Padding="8,4"
+                                                VerticalOptions="Start">
+                                                <Label
+                                                    Text="{Binding EtiquetaEstado}"
+                                                    TextColor="White"
+                                                    FontSize="10"
+                                                    FontFamily="OpenSansSemibold" />
+                                            </Border>
+                                        </Grid>
+
+                                        <!-- Fila 2: separador -->
+                                        <BoxView
+                                            Grid.Row="1"
+                                            HeightRequest="1"
+                                            BackgroundColor="#F0F0F0"
+                                            Margin="0,0,0,12" />
+
+                                        <!-- Fila 3: mensaje de estado del contenedor -->
+                                        <Label
+                                            Grid.Row="2"
+                                            Text="{Binding MensajeEstado}"
+                                            IsVisible="{Binding TieneMensaje}"
+                                            FontSize="12"
+                                            TextColor="#5A5856"
+                                            Margin="0,0,0,10" />
+
+                                        <!-- Fila 4: accion principal (marcar lleno o verificar entrega) -->
+                                        <Grid Grid.Row="3" ColumnDefinitions="*,Auto">
+
+                                            <!-- Boton: marcar lleno y solicitar nuevo (solo si esta disponible) -->
+                                            <Button
+                                                Grid.Column="0"
+                                                Text="Marcar lleno y solicitar"
+                                                Command="{Binding MarcarLlenoCommand}"
+                                                IsVisible="{Binding PuedeMarcarLleno}"
+                                                BackgroundColor="#f65810"
+                                                TextColor="White"
+                                                FontSize="13"
+                                                CornerRadius="6"
+                                                HeightRequest="44" />
+
+                                            <!-- Boton: verificar si ya entregaron el vacio -->
+                                            <Button
+                                                Grid.Column="0"
+                                                Text="Verificar entrega"
+                                                Command="{Binding VerificarEntregaCommand}"
+                                                IsVisible="{Binding SolicitudPendiente}"
+                                                IsEnabled="{Binding PuedeVerificar}"
+                                                BackgroundColor="#5A5856"
+                                                TextColor="White"
+                                                FontSize="13"
+                                                CornerRadius="6"
+                                                HeightRequest="44" />
+
+                                            <!-- Indicador de verificacion en curso -->
+                                            <ActivityIndicator
+                                                Grid.Column="1"
+                                                IsRunning="{Binding Verificando}"
+                                                IsVisible="{Binding Verificando}"
+                                                Color="#f65810"
+                                                Margin="10,0,0,0"
+                                                VerticalOptions="Center"
+                                                HorizontalOptions="Center" />
+
+                                        </Grid>
+
+                                        <!-- Fila 5: cancelar solicitud, deliberadamente pequeno y secundario -->
+                                        <Button
+                                            Grid.Row="4"
+                                            Text="Cancelar solicitud"
+                                            Command="{Binding CancelarSolicitudCommand}"
+                                            IsVisible="{Binding SolicitudPendiente}"
+                                            IsEnabled="{Binding PuedeCancelar}"
+                                            BackgroundColor="Transparent"
+                                            TextColor="#9E6B5A"
+                                            BorderColor="Transparent"
+                                            FontSize="11"
+                                            CornerRadius="4"
+                                            Padding="6,4"
+                                            HeightRequest="28"
+                                            HorizontalOptions="End"
+                                            Margin="0,6,0,0" />
+
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!-- Estado vacio -->
+                    <VerticalStackLayout
+                        IsVisible="{Binding Cargando, Converter={StaticResource InvertBoolConverter}}"
+                        Spacing="8"
+                        Margin="0,40,0,0"
+                        HorizontalOptions="Center">
+                        <Label
+                            Text="Sin contenedores asignados"
+                            FontSize="15"
+                            TextColor="#5A5856"
+                            HorizontalOptions="Center"
+                            IsVisible="{Binding Contenedores.Count, Converter={StaticResource InvertBoolConverter}}" />
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+
+    </Grid>
+</ContentPage>
